@@ -2371,7 +2371,7 @@
         "OptionA":  "Serán aprobados en Consejo de Ministros, que los someterá al Congreso, acompañados de una exposición de motivos y de los antecedentes necesarios para pronunciarse sobre ellos.",
         "OptionB":  "Serán aprobados en Consejo de Ministros, que los someterá al Senado, acompañados de una exposición de motivos y de los antecedentes necesarios para pronunciarse sobre ellos.",
         "OptionC":  "Serán aprobados por el Congreso, el cual los remitirá al Consejo de Ministros, acompañados de una exposición de motivos y de los antecedentes necesarios para pronunciarse sobre ellos.",
-        "OptionD":  "",
+        "OptionD":  "SerÃ¡n aprobados en Consejo de Ministros, que los someterÃ¡ al Congreso y al Senado simultÃ¡neamente, acompaÃ±ados de una exposiciÃ³n de motivos y de los antecedentes necesarios para pronunciarse sobre ellos.",
         "CorrectAnswer":  "A",
         "Explanation":  "La respuesta correcta es la A («Serán aprobados en Consejo de Ministros, que los someterá al Congreso, acompañados de una exposición de motivos y de los antecedentes necesarios para pronunciarse sobre ellos.»). Justificación en el temario: «Los proyectos de ley serán aprobados en Consejo de Ministros, que los someterá al Congreso, acompañados de»."
     },
@@ -10544,7 +10544,7 @@
         "OptionA":  "Personas y vehículos.",
         "OptionB":  "Objetos y mercancías.",
         "OptionC":  "Personal laboral del edificio. Todas son correctas.",
-        "OptionD":  "",
+        "OptionD":  "Ninguna de las opciones anteriores es correcta.",
         "CorrectAnswer":  "C",
         "Explanation":  "La respuesta correcta es la C («Personal laboral del edificio. Todas son correctas.»). Justificación en el temario: «Cuando el edificio disponga de una puerta de entrada y salida diferente para el personal laboral o de un horario»."
     },
