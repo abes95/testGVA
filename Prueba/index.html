@@ -1352,6 +1352,18 @@
                 <h2 class="setup-title">Simulador de Examen</h2>
                 <p class="setup-description">Pon a prueba tus conocimientos en un entorno controlado. Durante el examen no se mostrarán los fallos de inmediato y habrá un tiempo límite. <strong style="color: var(--warning);">Corrección oficial:</strong> cada 3 respuestas incorrectas restan 1 correcta (penalización de 1/3). Las preguntas no respondidas no penalizan.</p>
                 
+                <div style="margin-bottom: 2rem;">
+                    <button class="btn" id="exam-official-start-btn" style="width: 100%; justify-content: center; padding: 1.1rem; background: linear-gradient(135deg, var(--primary), var(--accent)); font-size: 1.05rem; box-shadow: var(--shadow-glow); margin-bottom: 1.5rem;">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="margin-right: 0.5rem;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+                        Comenzar Examen Oficial (80 Preguntas)
+                    </button>
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; color: var(--text-muted); font-size: 0.8rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">
+                        <span style="height: 1px; flex-grow: 1; background-color: var(--border-color);"></span>
+                        <span>O configurar simulacro personalizado</span>
+                        <span style="height: 1px; flex-grow: 1; background-color: var(--border-color);"></span>
+                    </div>
+                </div>
+
                 <div class="setup-form-group">
                     <label class="setup-label">Número de preguntas</label>
                     <div class="setup-select-grid" id="exam-questions-selector">
@@ -1374,8 +1386,8 @@
                     </div>
                 </div>
 
-                <button class="btn" id="exam-start-btn" style="width: 100%; justify-content: center; padding: 1rem;">
-                    Comenzar Examen Oficial
+                <button class="btn btn-secondary" id="exam-start-btn" style="width: 100%; justify-content: center; padding: 1rem;">
+                    Comenzar Simulacro Personalizado
                 </button>
             </div>
         </div>
@@ -2093,8 +2105,101 @@
             });
             
             document.getElementById('exam-start-btn').onclick = startExam;
+            document.getElementById('exam-official-start-btn').onclick = startOfficialExam;
             
             navigate('exam-setup');
+        }
+
+        function getRandomQuestionsFromTopics(topics, count) {
+            const pool = state.questions.filter(q => topics.includes(q.Topic));
+            const shuffled = [...pool];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled.slice(0, count);
+        }
+
+        function startOfficialExam() {
+            const group1Topics = [
+                "Constitución Española: Estructura y Fechas",
+                "Constitución Española: Título Preliminar",
+                "Constitución Española: Título I (Derechos y Deberes)",
+                "Constitución Española: Título V (Gobierno y Cortes)",
+                "Estatuto de Autonomía de la Comunitat Valenciana",
+                "Ley 5/1983, de 30 de diciembre, del Consell (I)",
+                "Ley 5/1983, de 30 de diciembre, del Consell (II)"
+            ];
+            
+            const group2Topics = [
+                "Seguridad Digital: Orden 19/2013"
+            ];
+            
+            const group3Topics = [
+                "Atención a la Ciudadanía: Decreto 30/2025 del Consell"
+            ];
+            
+            const group4Topics = [
+                "Leyes de Igualdad y Violencia de Género (Ley 3/2007, 9/2003, 4/2023, 1/2004)",
+                "Ley 39/2015 del Procedimiento Administrativo Común (I)",
+                "Ley 39/2015 (II) y Ley 40/2015 (Régimen Jurídico)",
+                "Ley 4/2021 de la Función Pública Valenciana"
+            ];
+
+            const q1 = getRandomQuestionsFromTopics(group1Topics, 20);
+            const q2 = getRandomQuestionsFromTopics(group2Topics, 5);
+            const q3 = getRandomQuestionsFromTopics(group3Topics, 10);
+            const q4 = getRandomQuestionsFromTopics(group4Topics, 45);
+
+            const examQuestions = [...q1, ...q2, ...q3, ...q4];
+
+            if (examQuestions.length < 80) {
+                showToast("Error: No hay suficientes preguntas para generar el examen oficial.", "incorrect");
+                return;
+            }
+
+            // Shuffle all together to get a random layout of 80 questions
+            for (let i = examQuestions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [examQuestions[i], examQuestions[j]] = [examQuestions[j], examQuestions[i]];
+            }
+
+            state.exam.questions = examQuestions;
+            state.exam.userSelections = {};
+            state.exam.currentIndex = 0;
+            
+            // Timer setup: 1 minute per question (80 questions = 80 minutes)
+            state.exam.totalTimeSeconds = examQuestions.length * 60;
+            state.exam.timeSecondsRemaining = state.exam.totalTimeSeconds;
+            
+            if (state.exam.timerInterval) clearInterval(state.exam.timerInterval);
+            updateExamTimerUI();
+            state.exam.timerInterval = setInterval(() => {
+                state.exam.timeSecondsRemaining--;
+                updateExamTimerUI();
+                
+                if (state.exam.timeSecondsRemaining <= 0) {
+                    clearInterval(state.exam.timerInterval);
+                    finishExam(true); // Auto submit
+                }
+            }, 1000);
+            
+            // Build Dots Navigation Grid
+            const dots = document.getElementById('exam-dots-grid');
+            dots.innerHTML = '';
+            for (let i = 0; i < examQuestions.length; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'exam-nav-cell';
+                cell.textContent = i + 1;
+                cell.setAttribute('data-index', i);
+                cell.onclick = (e) => {
+                    state.exam.currentIndex = parseInt(e.currentTarget.getAttribute('data-index'));
+                    renderExamQuestion();
+                };
+                dots.appendChild(cell);
+            }
+            
+            navigate('exam-run', 'Examen en Curso', 'Examen Oficial GVA (80 Preguntas) - Responde de forma concentrada. Al finalizar se mostrará tu nota.');
         }
 
         function startExam() {
